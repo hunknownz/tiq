@@ -70,6 +70,11 @@ import (
 	odbcTimeType      "t"
 	odbcTimestampType "ts"
 
+	/* The following tokens beblong to Topic. */
+	qCreate "QCREATE"
+	topic   "TOPIC"
+	topics  "TOPICS"
+
 	/* The following tokens belong to ReservedKeyword. Notice: make sure these tokens are contained in ReservedKeyword. */
 	add               "ADD"
 	all               "ALL"
@@ -935,6 +940,7 @@ import (
 	BindableStmt               "Statement that can be created binding on"
 	UpdateStmtNoWith           "Update statement without CTE clause"
 	HelpStmt                   "HELP statement"
+	QCreateTopicStmt           "QCreate Topic"
 
 %type	<item>
 	AdminShowSlow                          "Admin Show Slow statement"
@@ -3689,6 +3695,15 @@ DatabaseOptionList:
 |	DatabaseOptionList DatabaseOption
 	{
 		$$ = append($1.([]*ast.DatabaseOption), $2.(*ast.DatabaseOption))
+	}
+
+QCreateTopicStmt:
+	"QCREATE" "TOPIC" stringLit "AS" stringLit
+	{
+		$$ = &ast.QCreateTopicStmt{
+			TopicName: $3,
+			TableName: $5,
+		}
 	}
 
 /*******************************************************************
@@ -11015,6 +11030,7 @@ Statement:
 |	ShutdownStmt
 |	RestartStmt
 |	HelpStmt
+|	QCreateTopicStmt
 
 TraceableStmt:
 	DeleteFromStmt

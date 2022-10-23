@@ -3483,3 +3483,26 @@ func (n *AsOfClause) Accept(v Visitor) (Node, bool) {
 	n.TsExpr = node.(ExprNode)
 	return v.Leave(n)
 }
+
+// QCreateTopicStmt is a statement to qCreate topic.
+type QCreateTopicStmt struct {
+	dmlNode
+
+	TopicName string
+	TableName string
+}
+
+// Restore implements Node interface.
+func (n *QCreateTopicStmt) Restore(ctx *format.RestoreCtx) error {
+	ctx.WriteKeyWord("QCREATE TOPIC ")
+	ctx.WriteString(n.TopicName)
+	ctx.WriteKeyWord(" AS ")
+	ctx.WriteString(n.TableName)
+	return nil
+}
+
+// Accept implements Node Accept interface.
+func (n *QCreateTopicStmt) Accept(v Visitor) (Node, bool) {
+	newNode, _ := v.Enter(n)
+	return v.Leave(newNode)
+}
