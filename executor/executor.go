@@ -1939,3 +1939,36 @@ func isWeakConsistencyRead(ctx sessionctx.Context, node ast.Node) bool {
 	return sessionVars.ConnectionID > 0 && sessionVars.ReadConsistency.IsWeak() &&
 		plannercore.IsAutoCommitTxn(ctx) && plannercore.IsReadOnly(node, sessionVars)
 }
+
+// QCreateTopicExec represents a qcreate topic executor.
+type QCreateTopicExec struct {
+	baseExecutor
+ 
+	topicName string
+	tableName string
+	done bool
+ }
+ 
+ // Open implements the Executor Open interface.
+ func (e *QCreateTopicExec) Open(ctx context.Context) error {
+	logutil.BgLogger().Warn("----- qcreate open")
+	return nil
+ }
+ 
+ // Next implements the Executor Next interface.
+ func (e *QCreateTopicExec) Next(ctx context.Context, req *chunk.Chunk) error {
+	req.Reset()
+	if e.done {
+	   return nil
+	}
+	e.done = true
+ 
+	logutil.BgLogger().Warn("----- qcreate exec", zap.String("topic", e.topicName), zap.String("table", e.tableName))	
+	return nil
+ }
+ 
+ // Close implements the Executor Close interface.
+ func (e *QCreateTopicExec) Close() error {
+	logutil.BgLogger().Warn("----- qcreate close")
+	return nil
+ }

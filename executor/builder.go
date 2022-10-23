@@ -287,6 +287,8 @@ func (b *executorBuilder) build(p plannercore.Plan) Executor {
 		return b.buildCTE(v)
 	case *plannercore.PhysicalCTETable:
 		return b.buildCTETableReader(v)
+	case *plannercore.QCreateTopic:
+		return b.buildQCreateTopic(v)
 	default:
 		if mp, ok := p.(MockPhysicalPlan); ok {
 			return mp.GetExecutor()
@@ -295,6 +297,15 @@ func (b *executorBuilder) build(p plannercore.Plan) Executor {
 		b.err = ErrUnknownPlan.GenWithStack("Unknown Plan %T", p)
 		return nil
 	}
+}
+
+func (b *executorBuilder) buildQCreateTopic(v *plannercore.QCreateTopic) Executor {
+	e := &QCreateTopicExec{
+	    baseExecutor: newBaseExecutor(b.ctx, nil, v.ID()),
+	    topicName:         v.TopicName,
+	    tableName:      v.TableName,
+	}
+	return e
 }
 
 func (b *executorBuilder) buildCancelDDLJobs(v *plannercore.CancelDDLJobs) Executor {

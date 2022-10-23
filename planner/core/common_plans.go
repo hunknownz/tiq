@@ -1650,3 +1650,10 @@ func IsPointGetWithPKOrUniqueKeyByAutoCommit(ctx sessionctx.Context, p Plan) (bo
 func IsAutoCommitTxn(ctx sessionctx.Context) bool {
 	return ctx.GetSessionVars().IsAutocommit() && !ctx.GetSessionVars().InTxn()
 }
+
+type QCreateTopic struct {
+	baseSchemaProducer
+
+	TopicName string
+	TableName string
+}

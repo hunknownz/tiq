@@ -763,8 +763,18 @@ func (b *PlanBuilder) Build(ctx context.Context, node ast.Node) (Plan, error) {
 		return b.buildChange(x)
 	case *ast.SplitRegionStmt:
 		return b.buildSplitRegion(x)
+	case *ast.QCreateTopicStmt:
+		return b.buildQCreateTopic(x)
 	}
 	return nil, ErrUnsupportedType.GenWithStack("Unsupported type %T", node)
+}
+
+func (b *PlanBuilder) buildQCreateTopic(v *ast.QCreateTopicStmt) (Plan, error) {
+	p := &QCreateTopic{
+		TopicName: v.TopicName,
+		TableName: v.TableName,
+	}
+	return p, nil
 }
 
 func (b *PlanBuilder) buildSetConfig(ctx context.Context, v *ast.SetConfigStmt) (Plan, error) {
